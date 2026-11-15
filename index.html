@@ -3,317 +3,555 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f5f8f7">
-  <meta name="color-scheme" content="light dark">
-  <title>Сдача без монет</title>
+  <meta name="theme-color" content="#ffdce9">
+  <meta name="color-scheme" content="light">
+  <title>Сдача без мелочи — тренажёр</title>
   <style>
     :root {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      font-synthesis: none;
-      -webkit-font-smoothing: antialiased;
-      --bg: var(--tg-theme-bg-color, #f5f8f7);
-      --surface: var(--tg-theme-secondary-bg-color, #ffffff);
-      --text: var(--tg-theme-text-color, #1f3029);
-      --muted: var(--tg-theme-hint-color, #63736c);
-      --accent: var(--tg-theme-button-color, #117b58);
-      --accent-text: var(--tg-theme-button-text-color, #ffffff);
-      --border: #dfe7e2;
-      --field: #ffffff;
-      --success-bg: #e3f6ec;
-      --success-text: #115b3f;
-      --shadow: 0 12px 38px rgba(31, 55, 42, 0.06);
-    }
-    :root.dark {
-      --border: #35443e;
-      --field: #26352f;
-      --success-bg: #193f31;
-      --success-text: #a6efd0;
-      --shadow: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color-scheme: light;
+      --page: #fff3f7;
+      --paper: #fffdfc;
+      --paper-tint: #ffe7f0;
+      --pink: #ed3c8a;
+      --pink-deep: #af235a;
+      --ink: #3e2332;
+      --ink-soft: #765566;
+      --line: #efc9d9;
+      --line-strong: #3e2332;
+      --wrong: #a13b65;
+      --danger-paper: #fff1f4;
+      --radius: 18px;
     }
     * { box-sizing: border-box; }
-    html { min-height: 100%; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.4;
-    }
+    html { background: var(--page); }
+    body { margin: 0; min-height: 100dvh; background: var(--page); color: var(--ink); line-height: 1.45; -webkit-font-smoothing: antialiased; }
     button, input { font: inherit; }
-    button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; cursor: pointer; }
-    .shell {
-      max-width: 540px;
-      margin: 0 auto;
-      padding: calc(22px + env(safe-area-inset-top, 0px)) 18px calc(28px + env(safe-area-inset-bottom, 0px));
-    }
-    .eyebrow {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-    h1 { margin: 5px 0 4px; font-size: clamp(28px, 8vw, 34px); line-height: 1.1; letter-spacing: -.035em; }
-    .subtitle { margin: 6px 0 20px; color: var(--muted); font-size: 14px; }
-    .small-action {
-      margin-top: 5px; background: transparent; color: var(--muted);
-      border: 1px solid var(--border); border-radius: 12px;
-      min-height: 38px; padding: 0 11px; font-size: 13px;
-      white-space: nowrap;
-    }
-    .panel { background: var(--surface); padding: 20px; border-radius: 22px; box-shadow: var(--shadow); }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .input-block label { display: block; color: var(--muted); font-size: 12px; font-weight: 650; margin: 0 0 7px; }
-    .money-input-wrap { position: relative; }
-    .money-input {
-      display: block; width: 100%; height: 62px; border: 1.5px solid var(--border); border-radius: 14px;
-      color: var(--text); background: var(--field); font-weight: 750;
-      font-size: clamp(20px, 6vw, 27px); line-height: 1; letter-spacing: -.03em;
-      padding: 12px 33px 12px 12px; appearance: none; outline: none;
-      font-variant-numeric: tabular-nums;
-    }
-    .money-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
-    .money-input::placeholder { color: var(--muted); opacity: .48; }
-    .unit { position: absolute; top: 50%; right: 13px; transform: translateY(-50%); pointer-events: none; color: var(--muted); font-size: 18px; }
-    .shortcut-label { font-size: 12px; margin: 16px 0 8px; color: var(--muted); }
-    .shortcuts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
-    .shortcut {
-      border: 1px solid var(--border); border-radius: 10px; padding: 10px 3px;
-      background: transparent; color: var(--text); font-size: 14px; font-weight: 700;
-    }
-    .shortcut:active { transform: scale(.98); }
-    .switchrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
-    .switchrow-label { font-size: 12px; color: var(--muted); }
-    .switchgroup { display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--bg); }
-    .switchgroup button { border: 0; border-radius: 9px; padding: 7px 11px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; }
-    .switchgroup button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.09); }
-    .result { margin-top: 14px; padding: 21px 20px; border-radius: 22px; background: var(--success-bg); color: var(--success-text); }
-    .result-title { margin: 0 0 3px; font-size: 13px; font-weight: 700; opacity: .83; }
-    .result-primary { margin: 0; font-size: clamp(40px, 14vw, 62px); font-weight: 850; line-height: 1.12; letter-spacing: -.055em; font-variant-numeric: tabular-nums; }
-    .result-next { padding-top: 17px; margin-top: 16px; border-top: 1px solid color-mix(in srgb, var(--success-text) 20%, transparent); }
-    .result-secondary { margin: 2px 0 0; font-size: 32px; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-    .bill-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 9px; }
-    .bill { background: color-mix(in srgb, var(--success-text) 11%, transparent); border-radius: 7px; padding: 4px 8px; font-size: 12px; font-weight: 750; }
-    .explanation { margin-top: 14px; padding: 15px 16px; border: 1px solid var(--border); border-radius: 16px; }
-    .explanation strong { font-size: 13px; }
-    .calc { font-weight: 700; margin-top: 7px; font-size: 16px; font-variant-numeric: tabular-nums; }
-    .tiny { font-size: 12px; color: var(--muted); margin-top: 5px; }
-    .empty { text-align: center; padding: 27px 17px; border: 1px dashed var(--border); border-radius: 19px; color: var(--muted); margin-top: 14px; }
-    .empty strong { display: block; color: var(--text); font-size: 16px; margin-bottom: 5px; }
-    .error { border: 1px solid #e7b4ad; background: #fff0ec; color: #903f37; border-radius: 15px; padding: 14px; margin-top: 14px; }
-    :root.dark .error { background: #4a2f2d; color: #ffd5ce; border-color: #76514c; }
-    .footer-note { margin: 14px 8px 0; color: var(--muted); font-size: 12px; line-height: 1.55; text-align: center; }
-    .example-button { margin-top: 13px; display: inline-block; padding: 9px 15px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); font-weight: 700; }
-    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    button:disabled { opacity: .5; cursor: default; }
+    button:active { transform: translateY(1px); }
     [hidden] { display: none !important; }
-    @media (max-width: 360px) {
-      .shell { padding-left: 12px; padding-right: 12px; }
-      .panel { padding: 15px; }
-      .form-grid { gap: 9px; }
-      .money-input { font-size: 21px; padding-left: 10px; }
+    :focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
+    .shell { width: min(100%, 540px); margin: 0 auto; padding: calc(16px + env(safe-area-inset-top, 0px)) 14px calc(32px + env(safe-area-inset-bottom, 0px)); }
+    .hero { position: relative; padding: 18px 19px 20px; border: 1.5px solid var(--line-strong); border-radius: 23px 23px 18px 18px; overflow: hidden; background: #ffdce9; }
+    .hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(90deg, rgba(255,255,255,.22) 1px, transparent 1px); background-size: 24px 24px; opacity: .55; }
+    .hero-top { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 10px; border-bottom: 1.5px solid rgba(62,35,50,.4); }
+    .brand { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 900; letter-spacing: .12em; line-height: 1; }
+    .brand-mark { width: 21px; height: 21px; flex: 0 0 21px; }
+    .edition { font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+    .hero-inner { position: relative; z-index: 1; min-height: 169px; padding-top: 22px; }
+    h1 { position: relative; z-index: 2; margin: 0; font-weight: 950; font-size: clamp(40px, 10.3vw, 57px); line-height: .93; letter-spacing: -.072em; }
+    h1 span { display: block; }
+    h1 em { display: block; margin-top: 5px; color: var(--pink-deep); font-family: Georgia, 'Times New Roman', serif; font-size: .75em; font-weight: 500; letter-spacing: -.055em; line-height: 1.1; }
+    .hero-caption { position: relative; z-index: 2; max-width: 194px; margin: 16px 0 0; color: #694153; font-size: 12px; font-weight: 550; line-height: 1.55; }
+    .hero-art { position: absolute; z-index: 1; width: 53%; max-width: 248px; height: auto; right: -18px; top: 2px; pointer-events: none; filter: drop-shadow(0 9px 0 rgba(62,35,50,.09)); }
+    .utility-row { display: flex; gap: 10px; justify-content: space-between; align-items: center; margin: 20px 2px 10px; }
+    .section-kicker { font-size: 11px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .text-link { appearance: none; border: 0; padding: 7px 2px; background: none; color: var(--ink-soft); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+    .scoreboard { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .score-card { min-width: 0; height: 94px; border-radius: 15px; border: 1.5px solid var(--ink); padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; gap: 6px; background: #ffdfeb; }
+    .score-card.correct { background: var(--ink); color: #fff9f9; }
+    .score-card .score-text { display: flex; flex-direction: column; gap: 10px; min-width: 0; font-size: 12px; font-weight: 760; }
+    .score-card .score-icon { width: 23px; height: 23px; display: inline-flex; }
+    .score-card .score-icon svg { width: 23px; height: 23px; }
+    .score-card strong { font-size: 37px; line-height: 1; letter-spacing: -.05em; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .score-card.correct .score-icon { color: #ff9dc8; }
+    .score-card.incorrect .score-icon { color: #b22d62; }
+    .score-card.bump { animation: bump .3s ease-out; }
+    @keyframes bump { 45% { transform: translateY(-3px); } }
+    .panel, .step { border: 1.5px solid var(--line-strong); background: var(--paper); border-radius: var(--radius); padding: 19px; }
+    .panel { margin-top: 16px; }
+    .panel-heading > div { min-width: 0; flex: 1; }
+    .clear-btn { margin: 0 0 0 auto; padding: 6px 0 6px 5px; color: var(--ink-soft); font-size: 11px; font-weight: 700; background: transparent; border: 0; text-decoration: underline; text-underline-offset: 3px; }
+    .panel-heading, .step-heading { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 17px; }
+    .panel-title, .step-title { margin: 0; font-weight: 850; font-size: 16px; letter-spacing: -.025em; line-height: 1.25; }
+    .section-number { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 32px; width: 32px; height: 32px; border: 1.5px solid var(--ink); border-radius: 10px; background: var(--paper-tint); color: var(--ink); font-size: 12px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .panel-subtitle { display: block; margin-top: 4px; color: var(--ink-soft); font-size: 12px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    label { display: block; margin-bottom: 8px; color: var(--ink-soft); font-size: 12px; font-weight: 700; }
+    .money-wrap { position: relative; }
+    .money-input, .guess-input { width: 100%; outline: none; color: var(--ink); background: #fff9fb; border: 1.5px solid #d6a9bd; border-radius: 11px; font-variant-numeric: tabular-nums; }
+    .money-input { height: 58px; padding: 9px 31px 9px 11px; font-size: clamp(20px, 5.5vw, 28px); font-weight: 880; letter-spacing: -.045em; }
+    .guess-input { min-width: 0; height: 49px; padding: 9px 10px; font-size: 18px; font-weight: 770; }
+    .money-input:focus, .guess-input:focus { border-color: var(--pink-deep); box-shadow: 0 0 0 3px #ffe1ed; }
+    input::placeholder { color: #ae899d; opacity: .9; }
+    .unit { position: absolute; top: 50%; right: 11px; transform: translateY(-50%); font-size: 16px; color: var(--ink-soft); pointer-events: none; }
+    .shortcut-title { margin: 18px 0 8px; font-size: 11px; font-weight: 800; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .075em; }
+    .shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 6px; }
+    .shortcut { min-width: 0; border: 1px solid #e5b8cb; border-radius: 9px; padding: 11px 3px; background: #fff0f5; color: var(--ink); font-size: 12px; font-weight: 800; }
+    .shortcut:focus-visible, .shortcut:hover { border-color: var(--pink-deep); }
+    .switchrow { margin: 19px 0 0; padding: 15px 0 0; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .switchrow > span { font-size: 12px; font-weight: 600; color: var(--ink-soft); max-width: 173px; }
+    .switchgroup { display: flex; border: 1.5px solid var(--ink); background: #ffedf4; border-radius: 10px; padding: 3px; gap: 3px; }
+    .switchgroup button { border: 0; background: transparent; border-radius: 7px; color: var(--ink-soft); padding: 8px 12px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .switchgroup button[aria-pressed=true] { color: #fff; background: var(--ink); }
+    .practice-btn { width: 100%; margin-top: 16px; padding: 12px 14px; border: 1.5px dashed var(--pink-deep); border-radius: 11px; background: #fff7fa; font-weight: 850; color: var(--pink-deep); font-size: 13px; }
+    .practice-btn svg { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-right: 6px; }
+    .steps { margin-top: 15px; display: grid; gap: 12px; }
+    .step { position: relative; }
+    .step .step-heading { margin-bottom: 13px; align-items: center; }
+    .big-change { margin: 9px 0 2px; font-size: clamp(50px, 13vw, 65px); line-height: 1; font-weight: 910; letter-spacing: -.06em; color: var(--pink-deep); font-variant-numeric: tabular-nums; }
+    .equation, .step-note { color: var(--ink-soft); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .equation { margin-top: 9px; }
+    .question { margin: 0 0 12px; font-size: 14px; line-height: 1.6; }
+    .secret { margin: 4px 0 17px; font-size: 34px; line-height: 1.2; font-weight: 880; letter-spacing: -.025em; font-variant-numeric: tabular-nums; color: var(--pink-deep); }
+    .secret.masked { color: #b9829b; letter-spacing: .09em; }
+    .guess-label { margin-top: 2px; }
+    .guess-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+    .button { min-height: 49px; border-radius: 11px; border: 1.5px solid var(--ink); padding: 11px 15px; background: var(--pink); color: white; font-size: 13px; font-weight: 840; }
+    .button.secondary { background: var(--paper-tint); border-color: #e7adca; color: var(--pink-deep); }
+    .show-btn { width: 100%; margin-top: 11px; }
+    .feedback { margin: 10px 0 0; background: #e6f6ec; border-left: 3px solid #31734d; padding: 10px 12px; font-size: 13px; border-radius: 5px; }
+    .feedback.wrong { background: var(--danger-paper); border-color: var(--wrong); color: var(--wrong); }
+    .hint-btn { border: 0; background: none; padding: 12px 0 2px; color: var(--pink-deep); text-decoration: underline; text-underline-offset: 4px; font-size: 13px; font-weight: 750; }
+    .hint { margin: 10px 0 0; padding: 12px; border: 1px solid var(--line); background: #fff2f7; border-radius: 10px; font-size: 13px; color: var(--ink-soft); }
+    .step-note { margin: 4px 0 0; }
+    .final { background: #fff0f6; border-color: var(--ink); }
+    .final .section-number { color: white; background: var(--pink-deep); }
+    .final-label { color: var(--ink-soft); font-weight: 740; font-size: 13px; }
+    .final-value { margin: 2px 0 9px; font-size: clamp(47px, 11.5vw, 64px); line-height: 1.13; font-weight: 940; color: var(--pink-deep); letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+    .final-other { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 15px; }
+    .final-other strong { display: block; margin: 1px 0 0; font-size: 29px; letter-spacing: -.04em; }
+    .bills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .bill { padding: 5px 9px; border: 1px solid #d99cb8; background: var(--paper); border-radius: 6px; font-size: 12px; font-weight: 780; }
+    .final-equation { margin-top: 15px; font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .again { display: block; width: 100%; margin-top: 15px; }
+    .empty, .error { margin-top: 14px; padding: 18px; border-radius: 13px; font-size: 13px; }
+    .empty { background: #fffafc; border: 1.5px dashed var(--line-strong); color: var(--ink-soft); text-align: center; }
+    .empty strong { display: block; margin-bottom: 5px; font-size: 15px; color: var(--ink); }
+    .error { background: var(--danger-paper); border: 1px solid #d79bb5; color: var(--wrong); }
+    .example-btn { margin-top: 12px; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--line); background: #ffe2ed; color: var(--pink-deep); font-size: 13px; font-weight: 780; }
+    .footer { border-top: 1px solid var(--line); margin: 22px 0 0; padding: 14px 2px 0; color: var(--ink-soft); font-size: 11px; line-height: 1.7; }
+    @media (max-width: 385px) {
+      .hero { padding: 15px; }
+      .hero-inner { min-height: 160px; }
+      .hero-art { right: -29px; top: 10px; width: 53%; }
+      .hero-caption { max-width: 180px; }
+      .shell { padding-left: 10px; padding-right: 10px; }
+      .panel, .step { padding: 15px; }
+      .score-card { padding: 11px; }
+      .money-input { font-size: 21px; }
+      .shortcuts { gap: 5px; }
     }
-    @media (prefers-reduced-motion: no-preference) { .result { animation: fadein .18s ease-out; } @keyframes fadein { from { opacity: .82; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } } }
+    @media (prefers-reduced-motion: no-preference) { .step { animation: enter .2s ease-out; } @keyframes enter { from { opacity: .7; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } } }
   </style>
 </head>
 <body>
   <main class="shell">
-    <header>
-      <div class="heading">
-        <div>
-          <div class="eyebrow">Быстрый расчёт сдачи</div>
-          <h1>Без монет</h1>
+    <header class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <svg class="brand-mark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="1" y="4" width="22" height="16" rx="3" fill="#fff7ed" stroke="#3e2332" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4.2" fill="#f6a5c4" stroke="#3e2332" stroke-width="1.3"/>
+            <path d="M12 8.8v6.5M10.4 10.1h3.2" stroke="#3e2332" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          CASH STUDY
         </div>
-        <button id="clear" type="button" class="small-action" aria-label="Очистить обе суммы">Очистить</button>
+        <span class="edition">MINI APP / 01</span>
       </div>
-      <p class="subtitle">Сколько попросить дополнительно, чтобы выдать сдачу купюрами.</p>
+      <div class="hero-inner">
+        <h1><span>Сдача</span><em>без мелочи.</em></h1>
+        <p class="hero-caption">Тренажёр для кассы. Сначала считаешь сама, затем сверяешь ответ.</p>
+          <svg class="hero-art" viewBox="0 0 280 245" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Векторная иллюстрация сложенных купюр">
+            <g transform="translate(10 8)">
+              <g transform="translate(13 38) rotate(11 125 91)">
+                <rect x="30" y="24" width="224" height="149" rx="12" fill="#f5a8c8" stroke="#3e2332" stroke-width="3"/>
+                <rect x="40" y="34" width="204" height="129" rx="5" fill="none" stroke="#3e2332" stroke-width="1.4" stroke-dasharray="3 5" opacity=".65"/>
+              </g>
+              <g transform="rotate(-10 133 115)">
+                <rect x="30" y="27" width="216" height="149" rx="11" fill="#fff7ed" stroke="#3e2332" stroke-width="3.3"/>
+                <rect x="41" y="38" width="194" height="127" rx="4" fill="none" stroke="#c87899" stroke-width="1.8"/>
+                <rect x="49" y="46" width="178" height="111" rx="2" fill="none" stroke="#edc1d3" stroke-width="1"/>
+                <path d="M68 76h29M68 82h29M68 88h19M181 140h30M181 134h30M191 128h20" stroke="#c87899" stroke-width="1.6" stroke-linecap="round"/>
+                <text x="58" y="67" fill="#3e2332" font-family="Georgia, serif" font-size="19" font-weight="bold">50</text>
+                <text x="195" y="151" fill="#3e2332" font-family="Georgia, serif" font-size="18" font-weight="bold">50</text>
+                <ellipse cx="139" cy="101" rx="46" ry="49" fill="#f6d3de" stroke="#3e2332" stroke-width="2"/>
+                <ellipse cx="139" cy="101" rx="40" ry="43" fill="none" stroke="#bb6689" stroke-width="1.1" stroke-dasharray="2 4"/>
+                <path d="M139 65l7 15 17-2-10 12 8 14-16-5-6 17-7-17-16 5 8-14-10-12 17 2z" fill="#eb699e" stroke="#3e2332" stroke-width="2.2" stroke-linejoin="round"/>
+                <path d="M137 120v15M129 135h16" stroke="#3e2332" stroke-width="2" stroke-linecap="round"/>
+                <text x="56" y="147" fill="#a45777" font-family="Arial,sans-serif" font-size="7.7" font-weight="bold" letter-spacing="1.8">CASH CLUB</text>
+              </g>
+              <path d="M219 18l4.5 11.5L235 34l-11.5 4.5L219 50l-4.5-11.5L203 34l11.5-4.5z" fill="#e53f85" stroke="#3e2332" stroke-width="2"/>
+              <path d="M25 160l3 7.5 7.5 3-7.5 3-3 7.5-3-7.5-7.5-3 7.5-3z" fill="#fff6eb" stroke="#3e2332" stroke-width="1.6"/>
+              <path d="M213 187c6 0 10 3 10 8s-4 8-10 8-10-3-10-8 4-8 10-8zm0 3v10m-5-5h10" fill="none" stroke="#3e2332" stroke-width="2.1" stroke-linecap="round"/>
+              <path d="M23 201c32 10 51 8 74-4" fill="none" stroke="#9d5173" stroke-width="2.4" stroke-linecap="round"/>
+            </g>
+          </svg>
+      </div>
     </header>
 
-    <section class="panel" aria-label="Данные покупки">
-      <div class="form-grid">
-        <div class="input-block">
-          <label for="price">Сумма покупки</label>
-          <div class="money-input-wrap">
-            <input id="price" class="money-input" type="text" inputmode="decimal" autocomplete="off" placeholder="357" aria-describedby="money-hint">
-            <span class="unit">₽</span>
-          </div>
+    <div class="utility-row">
+      <span class="section-kicker">Твоя статистика</span>
+      <button id="reset-score" class="text-link" type="button">Сбросить</button>
+    </div>
+    <section class="scoreboard" aria-label="Статистика ответов" aria-live="polite">
+      <div id="correct-card" class="score-card correct">
+        <div class="score-text">
+          <span class="score-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="m7 12 3.5 3.5L17.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span><span>Правильно</span>
         </div>
-        <div class="input-block">
+        <strong id="correct-count">0</strong>
+      </div>
+      <div id="wrong-card" class="score-card incorrect">
+        <div class="score-text">
+          <span class="score-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="m9 9 6 6m0-6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </span><span>Ошибки</span>
+        </div>
+        <strong id="wrong-count">0</strong>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Суммы покупки и оплаты">
+      <div class="panel-heading">
+        <span class="section-number">01</span>
+        <div><h2 class="panel-title">Данные покупки</h2><span class="panel-subtitle">Введи стоимость и сколько дал покупатель</span></div>
+        <button type="button" id="clear" class="clear-btn">Очистить</button>
+      </div>
+      <div class="form-grid">
+        <div>
+          <label for="price">Стоимость покупки</label>
+          <div class="money-wrap"><input id="price" class="money-input" type="text" inputmode="decimal" autocomplete="off" placeholder="357"><span class="unit">₽</span></div>
+        </div>
+        <div>
           <label for="paid">Покупатель дал</label>
-          <div class="money-input-wrap">
-            <input id="paid" class="money-input" type="text" inputmode="decimal" autocomplete="off" placeholder="1000" aria-describedby="money-hint">
-            <span class="unit">₽</span>
-          </div>
+          <div class="money-wrap"><input id="paid" class="money-input" type="text" inputmode="decimal" autocomplete="off" placeholder="1000"><span class="unit">₽</span></div>
         </div>
       </div>
-      <div class="shortcut-label">Быстро выбрать, сколько дал покупатель</div>
-      <div class="shortcuts" role="group" aria-label="Быстрый выбор суммы оплаты">
-        <button type="button" class="shortcut" data-paid="500">500 ₽</button>
-        <button type="button" class="shortcut" data-paid="1000">1 000 ₽</button>
-        <button type="button" class="shortcut" data-paid="2000">2 000 ₽</button>
-        <button type="button" class="shortcut" data-paid="5000">5 000 ₽</button>
+      <div class="shortcut-title">Быстрый выбор суммы оплаты</div>
+      <div class="shortcuts" role="group" aria-label="Частые суммы оплаты">
+        <button class="shortcut" type="button" data-paid="500">500 ₽</button>
+        <button class="shortcut" type="button" data-paid="1000">1 000 ₽</button>
+        <button class="shortcut" type="button" data-paid="2000">2 000 ₽</button>
+        <button class="shortcut" type="button" data-paid="5000">5 000 ₽</button>
       </div>
       <div class="switchrow">
-        <span class="switchrow-label">Сдача купюрами от</span>
-        <div class="switchgroup" role="group" aria-label="Минимальная купюра для сдачи">
+        <span>Минимальная купюра для сдачи</span>
+        <div class="switchgroup" role="group" aria-label="Минимальная купюра">
           <button type="button" data-step="50" aria-pressed="true">50 ₽</button>
           <button type="button" data-step="100" aria-pressed="false">100 ₽</button>
         </div>
       </div>
+      <button id="new-example" type="button" class="practice-btn">
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h3c4 0 4 8 8 8h3m0 0-3-3m3 3-3 3M3 14h3c4 0 4-8 8-8h3m0 0-3-3m3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Случайный пример
+      </button>
     </section>
 
     <div id="empty" class="empty">
       <strong>Введи две суммы</strong>
-      Я сразу подскажу, сколько попросить и сколько отдать.
-      <div><button id="example" type="button" class="example-button">Показать пример</button></div>
+      Покажем обычную сдачу. Остальные ответы будут скрыты.
+      <div><button type="button" id="example" class="example-btn">Попробовать на примере</button></div>
     </div>
-
     <div id="error" class="error" role="alert" hidden></div>
 
-    <section id="result" aria-label="Результат расчёта" aria-live="polite" hidden>
-      <div class="result">
-        <p class="result-title" id="ask-label">Попроси у покупателя ещё</p>
-        <p class="result-primary" id="extra">7 ₽</p>
-        <div class="result-next">
-          <p class="result-title" id="give-label">Верни сдачу купюрами</p>
-          <p class="result-secondary" id="rounded">650 ₽</p>
-          <div id="bills" class="bill-row" aria-label="Пример купюр для сдачи"></div>
+    <section id="steps" class="steps" aria-label="Шаги расчёта" hidden>
+      <article class="step" id="first-step">
+        <div class="step-heading"><span class="section-number">02</span><h2 class="step-title">Обычная сдача</h2></div>
+        <p class="big-change" id="change">643 ₽</p>
+        <div class="equation" id="change-equation">1 000 − 357 = 643 ₽</div>
+      </article>
+      <article class="step" id="second-step">
+        <div class="step-heading"><span class="section-number">03</span><h2 class="step-title">Округли сдачу</h2></div>
+        <p class="question" id="round-question">До какого ближайшего числа округлить 643 ₽, чтобы выдать купюрами от 50 ₽?</p>
+        <p id="target-secret" class="secret masked" aria-hidden="true">··· ₽</p>
+        <div id="target-guess">
+          <label for="target-input" class="guess-label">Твой ответ</label>
+          <div class="guess-line">
+            <input id="target-input" class="guess-input" type="text" inputmode="decimal" autocomplete="off" placeholder="Сумма в рублях" aria-label="Твоя круглая сумма сдачи">
+            <button id="target-check" type="button" class="button">Проверить</button>
+          </div>
+          <p id="target-feedback" class="feedback" role="status" hidden></p>
+          <button id="target-hint-btn" class="hint-btn" type="button" aria-expanded="false">Нужна подсказка?</button>
+          <p id="target-hint" class="hint" hidden></p>
+          <button id="target-reveal" type="button" class="button secondary show-btn">Показать округлённую сдачу</button>
         </div>
-      </div>
-      <div class="explanation">
-        <strong>Как посчитали</strong>
-        <div class="calc" id="equation">1 000 + 7 − 357 = 650 ₽</div>
-        <div class="tiny" id="regular">Обычная сдача была бы 643 ₽</div>
-      </div>
+        <p id="target-explanation" class="step-note" hidden></p>
+      </article>
+      <article class="step" id="third-step" hidden>
+        <div class="step-heading"><span class="section-number">04</span><h2 class="step-title">Сколько попросить?</h2></div>
+        <p class="question" id="extra-question">На сколько 650 ₽ больше, чем 643 ₽?</p>
+        <p id="extra-secret" class="secret masked" aria-hidden="true">··· ₽</p>
+        <div id="extra-guess">
+          <label for="extra-input" class="guess-label">Твой ответ</label>
+          <div class="guess-line">
+            <input id="extra-input" class="guess-input" type="text" inputmode="decimal" autocomplete="off" placeholder="Сумма в рублях" aria-label="Твоя сумма доплаты">
+            <button id="extra-check" type="button" class="button">Проверить</button>
+          </div>
+          <p id="extra-feedback" class="feedback" role="status" hidden></p>
+          <button id="extra-hint-btn" class="hint-btn" type="button" aria-expanded="false">Нужна подсказка?</button>
+          <p id="extra-hint" class="hint" hidden></p>
+          <button id="extra-reveal" type="button" class="button secondary show-btn">Показать доплату</button>
+        </div>
+        <p id="extra-explanation" class="step-note" hidden></p>
+      </article>
+      <article class="step final" id="final-step" hidden aria-live="polite">
+        <div class="step-heading"><span class="section-number">05</span><h2 class="step-title">Итоговый расчёт</h2></div>
+        <div class="final-label" id="ask-label">Попроси у покупателя ещё</div>
+        <div class="final-value" id="extra">7 ₽</div>
+        <div class="final-other">
+          <div class="final-label" id="give-label">Отдай сдачу купюрами</div>
+          <strong id="rounded">650 ₽</strong>
+          <div id="bills" class="bills" aria-label="Какими купюрами выдать сдачу"></div>
+        </div>
+        <div id="final-equation" class="final-equation">1000 + 7 − 357 = 650 ₽</div>
+        <button class="button secondary again" type="button" id="start-again">Скрыть ответ и повторить</button>
+      </article>
     </section>
-
-    <p class="footer-note" id="money-hint">Можно вводить рубли и копейки через запятую. Если у покупателя нет нужной доплаты, сдачу придётся дать точно.</p>
+    <p class="footer">Правильные ответы и ошибки считаются при проверке. Подсказки не влияют на статистику. Результаты сохраняются в этом браузере. Доплату необходимо согласовать с покупателем.</p>
   </main>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     (() => {
       'use strict';
-      const $ = (id) => document.getElementById(id);
+      const $ = id => document.getElementById(id);
       const price = $('price');
       const paid = $('paid');
-      const empty = $('empty');
-      const error = $('error');
-      const result = $('result');
       const stepButtons = [...document.querySelectorAll('[data-step]')];
-      let stepRubles = 50;
-      const money = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 });
-      const moneyWithKopeks = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const fmtNumber = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 });
+      const fmtDecimal = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      let denomination = 50;
+      let stage = 0; // 0: only ordinary change; 1: rounded sum visible; 2: extra and final answer visible.
+      let values = null;
+      let solvedTarget = false;
+      let solvedExtra = false;
+      const scoreKey = 'pink-change-trainer-score-v1';
+      const stats = { correct: 0, wrong: 0 };
+      try {
+        const stored = JSON.parse(localStorage.getItem(scoreKey) || '{}');
+        for (const key of ['correct', 'wrong']) {
+          if (Number.isSafeInteger(stored[key]) && stored[key] >= 0) stats[key] = stored[key];
+        }
+      } catch (_) { /* Private mode or disabled storage: keep session counters. */ }
+      function renderStats() {
+        $('correct-count').textContent = stats.correct;
+        $('wrong-count').textContent = stats.wrong;
+      }
+      function countAnswer(correct) {
+        const key = correct ? 'correct' : 'wrong';
+        stats[key]++;
+        try { localStorage.setItem(scoreKey, JSON.stringify(stats)); } catch (_) {}
+        renderStats();
+        const card = $(correct ? 'correct-card' : 'wrong-card');
+        card.classList.remove('bump');
+        void card.offsetWidth;
+        card.classList.add('bump');
+      }
 
-      // All calculations use integer kopeks to avoid floating-point errors.
+      // Calculate money in integer kopeks so 357.80 works without floating-point errors.
       function parseKopeks(raw) {
-        const clean = raw.trim().replace(/[\s\u00a0\u202f]/g, '').replace(',', '.');
-        if (!/^\d+(?:\.\d{0,2})?$/.test(clean)) return null;
-        const [rub, kop = ''] = clean.split('.');
+        const cleaned = raw.trim().replace(/[\s\u00a0\u202f]/g, '').replace(',', '.');
+        if (!/^\d+(?:\.\d{0,2})?$/.test(cleaned)) return null;
+        const [rub, kop = ''] = cleaned.split('.');
         const value = Number(rub) * 100 + Number(kop.padEnd(2, '0'));
         if (!Number.isSafeInteger(value) || value > 100000000000) return null;
         return value;
       }
-      function fmt(kopeks) { return (kopeks % 100 ? moneyWithKopeks : money).format(kopeks / 100) + ' ₽'; }
-      function banknotes(amountRubles) {
-        const variants = [5000, 2000, 1000, 500, 200, 100, 50];
-        const parts = [];
-        let left = amountRubles;
-        for (const bill of variants) {
-          if (bill < stepRubles) continue;
-          const count = Math.floor(left / bill);
-          if (count) { parts.push({ bill, count }); left -= bill * count; }
+      function fmt(kop) {
+        return (kop % 100 ? fmtDecimal : fmtNumber).format(kop / 100) + ' ₽';
+      }
+      function makeBanknotes(wholeRubles) {
+        const result = [];
+        let remaining = wholeRubles;
+        for (const nominal of [5000, 2000, 1000, 500, 200, 100, 50]) {
+          if (nominal < denomination) continue;
+          const count = Math.floor(remaining / nominal);
+          if (count) { result.push({ nominal, count }); remaining -= nominal * count; }
         }
-        return parts;
+        return result;
+      }
+      function setHint(name, expanded) {
+        $(name + '-hint').hidden = !expanded;
+        $(name + '-hint-btn').setAttribute('aria-expanded', String(expanded));
+        $(name + '-hint-btn').textContent = expanded ? 'Скрыть подсказку' : 'Нужна подсказка?';
+      }
+      function resetSteps() {
+        stage = 0;
+        solvedTarget = false;
+        solvedExtra = false;
+        $('target-input').value = '';
+        $('extra-input').value = '';
+        for (const key of ['target', 'extra']) {
+          $(key + '-feedback').hidden = true;
+          setHint(key, false);
+        }
       }
       function render() {
-        const priceValue = price.value.trim();
-        const paidValue = paid.value.trim();
-        if (!priceValue || !paidValue) {
-          empty.hidden = false;
-          error.hidden = true;
-          result.hidden = true;
+        const rawPrice = price.value.trim();
+        const rawPaid = paid.value.trim();
+        if (!rawPrice || !rawPaid) {
+          $('empty').hidden = false;
+          $('error').hidden = true;
+          $('steps').hidden = true;
+          values = null;
           return;
         }
-        const priceKop = parseKopeks(priceValue);
-        const paidKop = parseKopeks(paidValue);
-        empty.hidden = true;
-        if (priceKop === null || paidKop === null) {
-          error.textContent = 'Введи корректную сумму. Например: 357 или 357,50';
-          error.hidden = false;
-          result.hidden = true;
+        const purchase = parseKopeks(rawPrice);
+        const given = parseKopeks(rawPaid);
+        $('empty').hidden = true;
+        if (purchase === null || given === null) {
+          $('error').textContent = 'Введи корректную сумму, например 357 или 357,50.';
+          $('error').hidden = false;
+          $('steps').hidden = true;
+          values = null;
           return;
         }
-        if (paidKop < priceKop) {
-          error.textContent = `Покупателю не хватает ${fmt(priceKop - paidKop)} для оплаты покупки.`;
-          error.hidden = false;
-          result.hidden = true;
+        if (given < purchase) {
+          $('error').textContent = `Покупателю не хватает ${fmt(purchase - given)} для оплаты.`;
+          $('error').hidden = false;
+          $('steps').hidden = true;
+          values = null;
           return;
         }
-        error.hidden = true;
-        const changeKop = paidKop - priceKop;
-        const stepKop = stepRubles * 100;
-        const extraKop = (stepKop - changeKop % stepKop) % stepKop;
-        const targetKop = changeKop + extraKop;
-        const noChange = targetKop === 0;
-        $('ask-label').textContent = extraKop === 0 ? 'Дополнительно просить не нужно' : 'Попроси у покупателя ещё';
-        $('extra').textContent = fmt(extraKop);
-        $('give-label').textContent = noChange ? 'Сдача не нужна' : 'Верни сдачу купюрами';
-        $('rounded').textContent = fmt(targetKop);
-        $('regular').textContent = `Обычная сдача: ${fmt(changeKop)}`;
-        $('equation').textContent = `${fmt(paidKop).replace(' ₽','')} + ${fmt(extraKop).replace(' ₽','')} − ${fmt(priceKop).replace(' ₽','')} = ${fmt(targetKop)}`;
-        const list = $('bills');
-        list.replaceChildren();
-        for (const { bill, count } of banknotes(targetKop / 100)) {
-          const chip = document.createElement('span');
-          chip.className = 'bill';
-          chip.textContent = `${money.format(bill)} ₽ × ${count}`;
-          list.appendChild(chip);
-        }
-        result.hidden = false;
-      }
+        $('error').hidden = true;
+        $('steps').hidden = false;
+        const change = given - purchase;
+        const unit = denomination * 100;
+        const extra = (unit - change % unit) % unit;
+        const target = change + extra;
+        values = { purchase, given, change, target, extra };
 
-      for (const input of [price, paid]) {
-        input.addEventListener('input', render);
+        $('change').textContent = fmt(change);
+        $('change-equation').textContent = `${fmt(given)} − ${fmt(purchase)} = ${fmt(change)}`;
+        $('round-question').textContent = `Какое ближайшее число не меньше ${fmt(change)} можно выдать купюрами от ${denomination} ₽?`;
+        $('target-secret').textContent = stage < 1 ? '··· ₽' : fmt(target);
+        $('target-secret').classList.toggle('masked', stage < 1);
+        $('target-secret').setAttribute('aria-hidden', String(stage < 1));
+        $('target-guess').hidden = stage >= 1;
+        $('target-explanation').hidden = stage < 1;
+        $('target-explanation').textContent = (solvedTarget ? 'Верно. ' : '') + (target === change
+          ? 'Уже круглая сумма — округлять ничего не нужно.'
+          : `Ближайшее подходящее число: ${fmt(target)}.`);
+        $('third-step').hidden = stage < 1;
+        $('extra-question').textContent = `На сколько ${fmt(target)} больше, чем ${fmt(change)}?`;
+        $('extra-secret').textContent = stage < 2 ? '··· ₽' : fmt(extra);
+        $('extra-secret').classList.toggle('masked', stage < 2);
+        $('extra-secret').setAttribute('aria-hidden', String(stage < 2));
+        $('extra-guess').hidden = stage >= 2;
+        $('extra-explanation').hidden = stage < 2;
+        $('extra-explanation').textContent = (solvedExtra ? 'Верно. ' : '') + `${fmt(target)} − ${fmt(change)} = ${fmt(extra)}`;
+        $('final-step').hidden = stage < 2;
+        $('ask-label').textContent = extra === 0 ? 'Доплату просить не нужно' : 'Попроси у покупателя ещё';
+        $('extra').textContent = fmt(extra);
+        $('give-label').textContent = target === 0 ? 'Сдача не нужна' : 'Отдай сдачу купюрами';
+        $('rounded').textContent = fmt(target);
+        $('final-equation').textContent = `${fmt(given)} + ${fmt(extra)} − ${fmt(purchase)} = ${fmt(target)}`;
+        const bills = $('bills');
+        bills.replaceChildren();
+        for (const { nominal, count } of makeBanknotes(target / 100)) {
+          const span = document.createElement('span');
+          span.className = 'bill';
+          span.textContent = `${fmtNumber.format(nominal)} ₽ × ${count}`;
+          bills.appendChild(span);
+        }
       }
-      price.addEventListener('keydown', (event) => {
+      function reveal(level, guessedCorrectly = false) {
+        if (!values) return;
+        if (guessedCorrectly && level === 1) solvedTarget = true;
+        if (guessedCorrectly && level === 2) solvedExtra = true;
+        stage = Math.max(stage, level);
+        render();
+      }
+      function checkGuess(kind) {
+        if (!values) return;
+        const typed = $(kind + '-input').value.trim();
+        const feedback = $(kind + '-feedback');
+        const guess = parseKopeks(typed);
+        const expected = kind === 'target' ? values.target : values.extra;
+        if (guess === null) {
+          feedback.textContent = 'Введи число в рублях, например 650 или 7,50.';
+          feedback.classList.add('wrong');
+          feedback.hidden = false;
+        } else if (guess === expected) {
+          countAnswer(true);
+          feedback.hidden = true;
+          reveal(kind === 'target' ? 1 : 2, true);
+        } else {
+          countAnswer(false);
+          feedback.textContent = kind === 'target'
+            ? `Не совсем. Найди ближайшее число, которое делится на ${denomination}.`
+            : 'Не совсем. Вычти обычную сдачу из круглой.';
+          feedback.classList.add('wrong');
+          feedback.hidden = false;
+        }
+      }
+      function changeInput() { resetSteps(); render(); }
+      price.addEventListener('input', changeInput);
+      paid.addEventListener('input', changeInput);
+      price.addEventListener('keydown', event => {
         if (event.key === 'Enter') { event.preventDefault(); paid.focus(); }
       });
-      paid.addEventListener('keydown', (event) => {
+      paid.addEventListener('keydown', event => {
         if (event.key === 'Enter') { event.preventDefault(); paid.blur(); }
       });
       document.querySelectorAll('[data-paid]').forEach(button => {
         button.addEventListener('click', () => {
           paid.value = button.dataset.paid;
-          render();
+          changeInput();
           if (!price.value.trim()) price.focus();
           else paid.blur();
         });
       });
       for (const button of stepButtons) {
         button.addEventListener('click', () => {
-          stepRubles = Number(button.dataset.step);
-          stepButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
-          render();
+          denomination = Number(button.dataset.step);
+          stepButtons.forEach(item => item.setAttribute('aria-pressed', String(button === item)));
+          changeInput();
         });
       }
-      $('example').addEventListener('click', () => { price.value = '357'; paid.value = '1000'; render(); });
-      $('clear').addEventListener('click', () => { price.value = ''; paid.value = ''; render(); price.focus(); });
+      for (const kind of ['target', 'extra']) {
+        $(kind + '-check').addEventListener('click', () => checkGuess(kind));
+        $(kind + '-input').addEventListener('keydown', event => {
+          if (event.key === 'Enter') { event.preventDefault(); checkGuess(kind); $(kind + '-input').blur(); }
+        });
+        $(kind + '-reveal').addEventListener('click', () => reveal(kind === 'target' ? 1 : 2));
+        $(kind + '-hint-btn').addEventListener('click', () => setHint(kind, $(kind + '-hint').hidden));
+      }
+      $('target-hint').textContent = 'Например, если сдача 643 ₽, ищем следующее число, кратное 50: 650 ₽. Оно не должно быть меньше сдачи.';
+      $('extra-hint').textContent = 'Просто вычти: круглая сдача минус обычная сдача. Именно столько нужно попросить дополнительно.';
+      $('clear').addEventListener('click', () => { price.value = ''; paid.value = ''; changeInput(); price.focus(); });
+      $('example').addEventListener('click', () => { price.value = '357'; paid.value = '1000'; changeInput(); });
+      $('start-again').addEventListener('click', () => { resetSteps(); render(); $('first-step').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      $('new-example').addEventListener('click', () => {
+        const options = [500, 1000, 2000, 5000];
+        const payment = options[Math.floor(Math.random() * options.length)];
+        const purchase = 25 + Math.floor(Math.random() * (payment - 75));
+        price.value = String(purchase);
+        paid.value = String(payment);
+        changeInput();
+        $('first-step').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      $('reset-score').addEventListener('click', () => {
+        const doReset = () => {
+          stats.correct = 0;
+          stats.wrong = 0;
+          try { localStorage.setItem(scoreKey, JSON.stringify(stats)); } catch (_) {}
+          renderStats();
+        };
+        if (window.Telegram?.WebApp?.showConfirm) {
+          window.Telegram.WebApp.showConfirm('Обнулить правильные ответы и ошибки?', confirmed => { if (confirmed) doReset(); });
+        } else if (confirm('Обнулить правильные ответы и ошибки?')) doReset();
+      });
+      window.addEventListener('storage', event => {
+        if (event.key !== scoreKey) return;
+        try {
+          const saved = JSON.parse(event.newValue || '{}');
+          stats.correct = Number.isSafeInteger(saved.correct) && saved.correct >= 0 ? saved.correct : 0;
+          stats.wrong = Number.isSafeInteger(saved.wrong) && saved.wrong >= 0 ? saved.wrong : 0;
+          renderStats();
+        } catch (_) {}
+      });
+      renderStats();
 
-      // Telegram API is optional: the same file works in any mobile browser.
+      // Telegram bridge is optional: the same app also works in a regular browser.
       const tg = window.Telegram?.WebApp;
       if (tg) {
-        document.documentElement.classList.toggle('dark', tg.colorScheme === 'dark');
-        tg.onEvent('themeChanged', () => document.documentElement.classList.toggle('dark', tg.colorScheme === 'dark'));
+        // The dedicated pink color palette is the same in both Telegram themes.
         tg.ready();
         tg.expand();
-      } else if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-        document.documentElement.style.setProperty('--bg', '#18241e');
-        document.documentElement.style.setProperty('--surface', '#25352d');
-        document.documentElement.style.setProperty('--text', '#f2f7f4');
-        document.documentElement.style.setProperty('--muted', '#b6c4bc');
-        document.documentElement.style.setProperty('--accent', '#55bb90');
       }
       render();
     })();
